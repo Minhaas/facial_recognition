@@ -40,6 +40,7 @@ class SimpleFacerec:
         print("Encoding images loaded")
 
     def detect_known_faces(self, frame):
+        auth = False 
         small_frame = cv2.resize(frame, (0, 0), fx=self.frame_resizing, fy=self.frame_resizing)
         # Find all the faces and face encodings in the current frame of video
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
@@ -52,7 +53,6 @@ class SimpleFacerec:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
             name = "Unknown"
-
             # # If a match was found in known_face_encodings, just use the first one.
             # if True in matches:
             #     first_match_index = matches.index(True)
@@ -63,8 +63,11 @@ class SimpleFacerec:
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = self.known_face_names[best_match_index]
+                print("Authentication successful\n")
+                auth = True
+                
             face_names.append(name)
-
+        
         # Convert to numpy array to adjust coordinates with frame resizing quickly
         face_locations = np.array(face_locations)
         face_locations = face_locations / self.frame_resizing
